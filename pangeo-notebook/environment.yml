@@ -1,0 +1,6 @@
+name: pangeo
+channels:
+ - conda-forge
+dependencies:
+ - python=3.10
+ - pangeo-notebook=2022.06.16

@@ -1,0 +1,9 @@
+# Note: this environment will be merged with the pangeo-notebook/environment.yml
+# by conda-lock. Only put things here that are not already in pangeo-notebook
+name: pangeo
+channels:
+ - conda-forge
+dependencies:
+ - python=3.10
+ - pangeo-notebook=2022.06.16
+ - pytorch
