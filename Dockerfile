@@ -128,8 +128,7 @@ eot
 USER ${NB_USER}
 WORKDIR ${HOME}
 
-# --chown=${NB_USER}:${NB_USER}
-COPY --from=conda --link ${CONDA_DIR} ${CONDA_DIR}
+COPY --from=conda --chown=1000:1000 --link ${CONDA_DIR} ${CONDA_DIR}
 COPY --from=start --link /tmp/start /opt/start
 
 EXPOSE 8888
