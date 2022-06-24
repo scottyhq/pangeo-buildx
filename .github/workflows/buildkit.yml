@@ -29,12 +29,19 @@ jobs:
       #   with:
       #     push: false
 
+      - name: Diagnostics
+        run: |
+          pwd
+          ls
+          docker images
+
       - name: Build Base
         uses: docker/build-push-action@v3
         with:
-          context: .base-notebook/
-          file: Dockerfile
+          context: ./base-notebook
+          file: ./Dockerfile
           push: false
+          load: true
           tags: pangeo/base:latest
 
       - name: Build pangeo-notebook
