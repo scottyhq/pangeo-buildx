@@ -46,6 +46,7 @@ jobs:
           load: true
           tags: pangeo/base:latest
 
+      # NOTE: this will use conda package cache from base-notebook
       - name: Build pangeo-notebook
         uses: docker/build-push-action@v3
         with:
@@ -53,6 +54,15 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: pangeo/notebook:latest
+
+      # NOTE: this will use conda package cache from previous steps
+      - name: Build pytorch-notebook
+        uses: docker/build-push-action@v3
+        with:
+          context: ./pytorch-notebook
+          file: ./Dockerfile
+          push: false
+          tags: pangeo/pytorch:latest
 
       - name: List Images
         run: docker images
