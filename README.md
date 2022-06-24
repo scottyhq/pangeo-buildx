@@ -19,14 +19,20 @@ https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md
 
 ## Usage:
 ```
-base-notebook
-docker buildx build -f ../Dockerfile ./ -t base-notebook:test
-
+# base-notebook
 docker buildx build -f Dockerfile ./base-notebook -t base-notebook:test
 
+# pangeo-notebook
 docker buildx build -f Dockerfile ./pangeo-notebook -t pangeo-notebook:test --progress=plain
 
-docker buildx
+# remote dockerfile, local context
+docker buildx build -f https://raw.githubusercontent.com/scottyhq/pangeo-buildx/main/Dockerfile ./base-notebook
+
+# remote dockerfile, remote context?
+docker buildx build -f https://raw.githubusercontent.com/scottyhq/pangeo-buildx/main/Dockerfile https://github.com/scottyhq/pangeo-buildx.git#main
+
+# build everything
+docker buildx bake
 ```
 
 ### Pros
