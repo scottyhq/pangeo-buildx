@@ -34,6 +34,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: base-notebook
+          file: ../Dockerfile
           push: false
           tags: pangeo/base:latest
 
@@ -41,6 +42,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: pangeo-notebook
+          file: ../Dockerfile
           push: false
           tags: pangeo/notebook:latest
 
