@@ -30,7 +30,7 @@ jobs:
       - name: Build Base
         uses: docker/build-push-action@v3
         with:
-          context: base-notebook
+          context: "{{defaultContext}}:base-notebook"
           file: Dockerfile
           push: false
           tags: pangeo/base:latest
