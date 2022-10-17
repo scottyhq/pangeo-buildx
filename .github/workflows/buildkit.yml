@@ -57,6 +57,8 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: pangeo/notebook:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # NOTE: this will use conda package cache from previous steps
       - name: Build pytorch-notebook
@@ -66,6 +68,8 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: pangeo/pytorch:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: List Images
         run: docker images
