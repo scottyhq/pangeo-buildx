@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.4
-ARG UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=22.04
 ARG MAMBAFORGE_VERSION=4.12.0-2
 
 # NOTE: all stages can run in parallel as root user,
