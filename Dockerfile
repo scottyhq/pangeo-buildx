@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.4
 ARG UBUNTU_VERSION=22.04
-ARG MAMBAFORGE_VERSION=4.12.0-2
+ARG MAMBAFORGE_VERSION=4.14.0-0
 
 # NOTE: all stages can run in parallel as root user,
 # jovyan user created at end for run-time
