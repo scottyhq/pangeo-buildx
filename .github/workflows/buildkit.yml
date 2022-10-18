@@ -60,7 +60,7 @@ jobs:
           cache-from: | 
             type=gha,scope=base
             type=gha,scope=pangeo
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,scope=pangeo
 
       # NOTE: this will use conda package cache from previous steps
       - name: Build pytorch-notebook
