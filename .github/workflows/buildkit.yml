@@ -46,8 +46,8 @@ jobs:
           push: false
           load: true
           tags: pangeo/base:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=base
+          cache-to: type=gha,mode=max,scope=base
 
       # NOTE: this will use conda package cache from base-notebook b/c same Dockerfile
       - name: Build pangeo-notebook
@@ -57,7 +57,9 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: pangeo/notebook:latest
-          cache-from: type=gha
+          cache-from: | 
+            type=gha,scope=base
+            type=gha,scope=pangeo
           cache-to: type=gha,mode=max
 
       # NOTE: this will use conda package cache from previous steps
@@ -68,8 +70,11 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: pangeo/pytorch:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: | 
+            type=gha,scope=base
+            type=gha,scope=pangeo
+            type=gha,scope=pytorch
+          cache-to: type=gha,mode=max,scope=pytorch
 
       - name: List Images
         run: docker images
