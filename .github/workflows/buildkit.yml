@@ -35,7 +35,7 @@ jobs:
           context: ./base-notebook
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/pangeo/base:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pangeo-base:latest
           cache-from: type=gha,scope=base
           cache-to: type=gha,mode=max,scope=base
 
@@ -46,7 +46,7 @@ jobs:
           context: ./pangeo-notebook
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/pangeo/notebook:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pangeo-notebook:latest
           cache-from: | 
             type=gha,scope=base
             type=gha,scope=pangeo
@@ -59,7 +59,7 @@ jobs:
           context: ./pytorch-notebook
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/pangeo/pytorch:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pangeo-pytorch:latest
           cache-from: | 
             type=gha,scope=base
             type=gha,scope=pangeo
