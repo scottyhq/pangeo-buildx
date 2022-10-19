@@ -2,7 +2,12 @@ name: ci
 
 on:
   push:
-  workflow_dispatch:
+    paths-ignore:
+      - '**/README.md'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   buildx:
@@ -17,31 +22,20 @@ jobs:
         with:
           buildkitd-flags: --debug
 
-#       - name: Login to DockerHub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKERHUB_USERNAME }}
-#           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-#       - name: Bake
-#         uses: docker/bake-action@v2
-#         with:
-#           push: false
-
-#       - name: Diagnostics
-#         run: |
-#           pwd
-#           ls
-#           docker images
+      - name: Login to GitHub Packages
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Base
         uses: docker/build-push-action@v3
         with:
           context: ./base-notebook
           file: ./Dockerfile
-          push: false
-#           load: true
-          tags: pangeo/base:latest
+          push: true
+          tags: ${{ env.REGISTRY }}/pangeo/base:latest
           cache-from: type=gha,scope=base
           cache-to: type=gha,mode=max,scope=base
 
@@ -51,8 +45,8 @@ jobs:
         with:
           context: ./pangeo-notebook
           file: ./Dockerfile
-          push: false
-          tags: pangeo/notebook:latest
+          push: true
+          tags: ${{ env.REGISTRY }}/pangeo/notebook:latest
           cache-from: | 
             type=gha,scope=base
             type=gha,scope=pangeo
@@ -64,16 +58,10 @@ jobs:
         with:
           context: ./pytorch-notebook
           file: ./Dockerfile
-          push: false
-          tags: pangeo/pytorch:latest
+          push: true
+          tags: ${{ env.REGISTRY }}/pangeo/pytorch:latest
           cache-from: | 
             type=gha,scope=base
             type=gha,scope=pangeo
             type=gha,scope=pytorch
           cache-to: type=gha,mode=max,scope=pytorch
-
-#       - name: List Images
-#         run: docker images
-
-#       - name: List Conda packages
-#         run: docker run pangeo/base:latest conda list
