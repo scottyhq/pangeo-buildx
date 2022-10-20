@@ -35,7 +35,7 @@ jobs:
           context: ./base-notebook
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/pangeo-base:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha,scope=base
           cache-to: type=gha,mode=max,scope=base
 
