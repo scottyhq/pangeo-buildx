@@ -48,19 +48,21 @@ RUN <<eot
     fi
 eot
 
-FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} as mambaforge
-
 # -----------------
+FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} as mambaforge
 FROM base as conda
 
 #Install environment from conda-linux-64.lock or environment.yml if they exist
 COPY --link --from=mambaforge /opt/conda ${CONDA_DIR}
-COPY --link environment.yml* conda-linux-64.lock* requirements.txt* postBuild* .
+COPY --link conda-lock.yml* environment.yml* conda-linux-64.lock* requirements.txt* .
 
-# NOTE: w/o from=: uses local cache pangeo-mambacache:latest
+# Cache will be available for subsequent `docker buildx build` commands
 RUN --mount=type=cache,target=/opt/conda/pkgs <<eot
-    echo "Checking for 'conda-linux-64.lock' or 'environment.yml'..."
-    if test -f "conda-linux-64.lock" ; then
+    echo "Checking for 'conda-lock.yml' 'conda-linux-64.lock' or 'environment.yml'..."
+    if test -f "conda-lock.yml" ; then
+      mamba install conda-lock=1.3 
+      conda-lock install --name ${CONDA_ENV} conda-lock.yml
+    elif test -f "conda-linux-64.lock" ; then
       mamba create --name ${CONDA_ENV} --file conda-linux-64.lock
     elif test -f "environment.yml" ; then
       mamba env create --name ${CONDA_ENV} -f environment.yml
@@ -72,8 +74,8 @@ RUN --mount=type=cache,target=/opt/conda/pkgs <<eot
     find ${CONDA_DIR} -not -path "${CONDA_DIR}/pkgs/*" -follow -type f -name '*.a' -delete
     find ${CONDA_DIR} -not -path "${CONDA_DIR}/pkgs/*" -follow -type f -name '*.pyc' -delete
     find ${CONDA_DIR} -not -path "${CONDA_DIR}/pkgs/*" -follow -type f -name '*.js.map' -delete
-    if [ -d ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static ]; then
-      find ${NB_PYTHON_PREFIX}/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete
+    if [ -d ${NB_PYTHON_PREFIX}/lib/python**/site-packages/bokeh/server/static ]; then
+      find ${NB_PYTHON_PREFIX}/lib/python**/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete
     fi
 eot
 
@@ -81,19 +83,6 @@ RUN <<eot
     echo "Checking for pip 'requirements.txt'..."
     if test -f "requirements.txt" ; then
       ${NB_PYTHON_PREFIX}/bin/pip install --no-cache -r requirements.txt
-    fi
-eot
-
-RUN <<eot
-    echo "Checking for 'postBuild'..."
-    if test -f "postBuild" ; then
-      chmod +x postBuild
-      ./postBuild
-      rm -rf /tmp/*
-      rm -rf ${NB_PYTHON_PREFIX}/share/jupyter/lab/staging
-      find ${CONDA_DIR} -follow -type f -name '*.a' -delete
-      find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete
-      find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete
     fi
 eot
 
@@ -125,11 +114,26 @@ RUN <<eot
     chown ${NB_USER}:${NB_USER} ${HOME}
 eot
 
-USER ${NB_USER}
-WORKDIR ${HOME}
-
 COPY --from=conda --chown=1000:1000 --link ${CONDA_DIR} ${CONDA_DIR}
 COPY --from=start --link /tmp/start /opt/start
+
+# PostBuild needs to happen after conda environment setup
+COPY --link postBuild* .
+RUN <<eot
+    echo "Checking for 'postBuild'..."
+    if test -f "postBuild" ; then
+      chmod +x postBuild
+      ./postBuild
+      rm -rf /tmp/*
+      rm -rf ${NB_PYTHON_PREFIX}/share/jupyter/lab/staging
+      find ${CONDA_DIR} -follow -type f -name '*.a' -delete
+      find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete
+      find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete
+    fi
+eot
+
+USER ${NB_USER}
+WORKDIR ${HOME}
 
 EXPOSE 8888
 ENTRYPOINT ["/opt/start"]

@@ -1,8 +1,10 @@
+# Docker buildx bake will build these
 group "default" {
    targets = ["base-notebook"]
+   #targets = ["base-notebook", "pangeo-notebook", "pytorch-notebook"]
 }
 
-# Dockerfile relative to context directory
+# Dockerfile in this repository is relative to context subdirectories
 target "base" {
     dockerfile = "../Dockerfile"
 }
